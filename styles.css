@@ -1,0 +1,74 @@
+:root { --bg:#0b0d10; --fg:#eef1f5; --muted:#a5b0c2; --card:#151a21; --acc:#4da3ff; } *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,Segoe UI,Roboto,Inter} header{padding:32px 20px;text-align:center;border-bottom:1px solid #232b35} header h1{margin:0;font-size:28px} header p{margin:6px 0 0;color:var(--muted)} /* LAYOUT VERTICALE: colonna unica */ .grid{ display:flex; flex-direction:column; gap:20px; max-width:1100px; margin:24px auto; padding:0 16px; } /* Card generiche */ .card{ background:var(--card); border:1px solid #232b35; border-radius:14px; padding:18px; } .card h2{margin:0 0 18px;font-size:30px} /* Limita l'altezza del CV e abilita lo scroll interno (così la chat non resta minuscola) */ .cv{ max-height:55vh; /* regola se vuoi più/meno alto il riquadro CV */ overflow:auto; } /* Chat sotto, con area messaggi ampia */ .chatlog{ height:45vh; /* area visibile della chat */ overflow:auto; background:#0e1217; border:1px solid #1f2630; border-radius:10px; padding:10px; margin-bottom:10px } .msg{margin:10px 0} .msg.me{color:var(--acc)} .msg.bot{color:var(--fg)} #chatform{display:flex;gap:8px} #question{ flex:1; padding:10px; border-radius:10px; border:1px solid #2a3442; background:#0e1217; color:var(--fg) } button{ border:0;border-radius:10px;padding:10px 16px; background:var(--acc);color:#00234a;font-weight:600;cursor:pointer } .note{color:var(--muted);font-size:13px;margin-top:10px} footer{padding:24px 16px;color:var(--muted);text-align:center} /* Opzionale: su schermi grandi aumenta lo spazio alla chat */ @media(min-width:900px){ .cv{max-height:60vh} .chatlog{height:50vh} } /* ===== Profile photo in header ===== */ .header-content { display: flex; align-items: center; justify-content: center; gap: 18px; } .profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--acc); box-shadow: 0 0 10px rgba(77,163,255,0.3); } .header-text h1 { margin: 0; font-size: 28px; } .header-text p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }/* === Header con foto centrata sopra al nome === */
+header{
+  padding:32px 20px;
+  text-align:center;
+  border-bottom:1px solid #232b35;
+  display:flex;
+  flex-direction:column;   /* verticale */
+  align-items:center;
+  gap:10px;
+}
+
+/* Foto profilo (PNG) centrata e circolare */
+.profile-pic{
+  width:200px;
+  height:200px;
+  border-radius:50%;
+  object-fit:cover;        /* evita deformazioni */
+  border:2px solid var(--acc);
+  box-shadow:0 0 14px rgba(77,163,255,0.25);
+  display:block;
+  margin:0 auto 4px;       /* centrata */
+}
+
+/* Titolo e sottotitolo */
+header h1{ margin:25px 0 0; font-size:38px; }
+header p{ margin:6px 0 0; color:var(--muted); }
+
+/* (Opzionale) Effetto hover soft sulla foto */
+.profile-pic:hover{
+  box-shadow:0 0 18px rgba(77,163,255,0.35);
+  transform:translateY(-1px);
+  transition:box-shadow .2s ease, transform .2s ease;
+}
+
+/* === Header con immagine di sfondo === */
+header {
+  position: relative;
+  padding: 48px 20px;
+  text-align: center;
+  border-bottom: 1px solid #232b35;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: url('whitelines.png') center/cover no-repeat; /* immagine di sfondo */
+}
+
+/* Sfumatura scura sopra lo sfondo per migliorare il contrasto del testo */
+header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(11,13,16,0.3), rgba(11,13,16,0.6));
+  z-index: 0;
+}
+
+/* Mantieni foto e testo sopra l’immagine */
+header img,
+header h1,
+header p {
+  position: relative;
+  z-index: 1;
+}
+
+/* Foto profilo centrata */
+.profile-pic {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--acc);
+  box-shadow: 0 0 14px rgba(77,163,255,0.25);
+}
+
