@@ -1,73 +1,174 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Erik Ori — CV & Chat</title>
+  <title>Erik Ori — CV & AI Chat</title>
   <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/6e3eacb420.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <header>
-    <img src="erik.png" alt="Erik Ori photo" class="profile-pic">
-    <h1>Erik Ori</h1>
-    <p>Management Engineer</p>
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-image">
+      <img src="1000190468-Photoroom.png" alt="Erik Ori photo">
+    </div>
+    <div class="hero-text">
+      <h1>Hey, I’m Erik!</h1>
+      <p>Management Engineer</p>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#work">Work</a>
+        <a href="#education">Education</a>
+        <a href="#skills">Skills</a>
+        <a href="#interests">Interests</a>
+        <a href="#chat">Chat</a>
+      </nav>
+    </div>
   </header>
 
-  <main class="grid">
-    <section class="card">
-      <h2>CV</h2>
-	<p>
-       <strong>About me</strong><br>
-  I am a recent Management Engineering graduate with some experience in process analysis and energy management.<br>
-  I enjoy combining analytical thinking with creativity to solve complex problems.<br>
-  Enthusiastic and adaptable, I am ready to start a new professional journey abroad.<br><br>
-
-  <strong>Work Experience</strong><br>
-  <u>Energy Management Intern</u>, Coopservice S.coop.p.A. (11/2024 – 05/2025)<br>
-  • Assisting the Energy Manager in daily activities and energy optimization projects.<br>
-  • Preparing technical reports, performance summaries, and management presentations.<br>
-  • Contributing to the implementation of KPI monitoring tools.<br>
-  • Supporting the maintenance and data updating of the energy management ERP.<br>
-  • Developing advanced Excel-based automation models for energy and economic KPIs.<br><br>
-
-  <u>Business Process Analyst</u>, Spaggiari S.r.l. (02/2023 – 08/2023)<br>
-  • Monitoring production times and process efficiency within the manufacturing workflow.<br>
-  • Supporting the development of a pricing tool.<br>
-  • Managing and organizing the company’s document and data archive.<br><br>
-
-  <u>Various roles</u> (01/2019 – 11/2024)<br>
-  • Working as waiter, agricultural worker, tutor, and babysitter developing teamwork, communication, and problem-solving skills.<br><br>
-
-  <strong>Education</strong><br>
-  Master’s Degree in Management Engineering – Energy Production, University of Modena and Reggio Emilia (09/2023 – 10/2025)<br>
-  Bachelor’s Degree in Management Engineering – Energy Production, University of Modena and Reggio Emilia (09/2019 – 07/2023)<br>
-  Technical Diploma in Industrial Chemistry, I.I.S Antonio Zanelli (09/2013 – 06/2018)<br><br>
-
-  <strong>Language Skills</strong><br>
-  Italian: Mother tongue<br>
-  English: B2<br>
-  French: A2<br><br>
-
-  <strong>Soft Skills</strong><br>
-  Teamwork, Adaptability, Problem-Solving, Communication, Data-driven Decisions, Analytical Reasoning, Creative Thinking, Empathy, Determination.<br><br>
-
-  <strong>Hard Skills</strong><br>
-  Business Management, Project Management, Supply Chain Management, Artificial Intelligence for Energy Management, Microsoft Office, Video conferencing tools, Python, Database Management System (SQL), HTML, Simulation Modelling (Anylogic), Environmental Impact Assessment (SimaPro), Workflow Automation (n8n).<br><br>
-
-  <strong>Interests</strong><br>
-  History, Science, AI, Philosophy, Board games, Poetry, Reading, Kickboxing.
-  </p>
+  <!-- TIMELINE -->
+  <main class="timeline">
+    <!-- ABOUT -->
+    <div id="about" class="section-title fade">
+      <i class="fa-solid fa-user fa-bounce"></i><h2>About Me</h2>
+    </div>
+    <section class="card fade">
+      <p>
+        I am a Management Engineering graduate with experience in process analysis and energy management.
+        I enjoy combining analytical thinking with creativity to solve complex problems.
+        Enthusiastic and adaptable, I am ready to start a new professional journey abroad.
+      </p>
     </section>
 
-    <section class="card chat">
-      <h2>Ask something about my CV</h2>
+    <!-- (arrow placeholders lasciati ma nascosti via CSS) -->
+    <div class="arrow fade"></div>
+
+    <!-- WORK EXPERIENCE -->
+    <div id="work" class="section-title fade">
+      <i class="fa-solid fa-briefcase fa-flip"></i><h2>Work Experience</h2>
+    </div>
+
+    <section class="card fade">
+      <h3>Energy Management Intern</h3>
+      <p class="place">Coopservice S.coop.p.A. — <span class="period">11/2024 – 05/2025</span></p>
+      <ul>
+        <li>Assisting the Energy Manager in daily activities and energy optimization projects.</li>
+        <li>Preparing technical reports, performance summaries, and management presentations.</li>
+        <li>Contributing to the implementation of KPI monitoring tools.</li>
+        <li>Supporting the maintenance and data updating of the energy management ERP.</li>
+        <li>Developing advanced Excel-based automation models for energy and economic KPIs.</li>
+      </ul>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <section class="card fade">
+      <h3>Business Process Analyst</h3>
+      <p class="place">Spaggiari S.r.l. — <span class="period">02/2023 – 08/2023</span></p>
+      <ul>
+        <li>Monitoring production times and process efficiency within the manufacturing workflow.</li>
+        <li>Supporting the development of a pricing tool.</li>
+        <li>Managing and organizing the company’s document and data archive.</li>
+      </ul>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <section class="card fade">
+      <h3>Various</h3>
+      <p class="place">Various — <span class="period">01/2019 – 11/2024</span></p>
+      <ul>
+        <li>Working as waiter, agricultural worker, tutor and babysitter developing teamwork, communication, and problem solving skills.</li>
+      </ul>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <!-- EDUCATION -->
+    <div id="education" class="section-title fade">
+      <i class="fa-solid fa-graduation-cap fa-spin"></i><h2>Education</h2>
+    </div>
+
+    <section class="card fade">
+      <h3>Master’s Degree in Management Engineering – Energy Production</h3>
+      <p class="place">University of Modena and Reggio Emilia — <span class="period">09/2023 – 10/2025</span></p>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <section class="card fade">
+      <h3>Bachelor’s Degree in Management Engineering – Energy Production</h3>
+      <p class="place">University of Modena and Reggio Emilia — <span class="period">09/2019 – 07/2023</span></p>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <section class="card fade">
+      <h3>Technical Diploma in Industrial Chemistry</h3>
+      <p class="place">I.I.S. Antonio Zanelli — <span class="period">09/2013 – 06/2018</span></p>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <!-- SKILLS -->
+    <div id="skills" class="section-title fade">
+      <i class="fa-solid fa-gears fa-beat-fade"></i><h2>Skills</h2>
+    </div>
+
+    <section class="card fade">
+      <h3>Language Skills</h3>
+      <ul>
+        <li>Italian: Mother tongue</li>
+        <li>English: B2</li>
+        <li>French: A2</li>
+      </ul>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <section class="card fade">
+      <h3>Soft Skills</h3>
+      <p>
+        Teamwork, Adaptability, Problem-Solving, Communication, Data-driven Decisions, Analytical Reasoning,
+        Creative Thinking, Empathy, Determination.
+      </p>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <section class="card fade">
+      <h3>Hard Skills</h3>
+      <p>
+        Business Management, Project Management, Supply Chain Management, Artificial Intelligence for Energy Management,
+        Microsoft Office, Video conferencing tools, Python, Database Management System (SQL), HTML,
+        Simulation Modelling (Anylogic), Environmental Impact Assessment (SimaPro), Workflow Automation (n8n).
+      </p>
+    </section>
+
+    <div class="arrow fade"></div>
+
+    <!-- INTERESTS -->
+    <div id="interests" class="section-title fade">
+      <i class="fa-solid fa-heart fa-beat"></i><h2>Interests</h2>
+    </div>
+
+    <section class="card fade">
+      <p>History, Science, AI, Philosophy, Board games, Poetry, Reading, Kickboxing.</p>
+    </section>
+
+    <!-- CHAT -->
+    <div id="chat" class="section-title fade">
+      <i class="fa-solid fa-comments"></i><h2>Ask something about my CV</h2>
+    </div>
+    <section class="card chat fade">
       <div id="chatlog" class="chatlog"></div>
       <form id="chatform">
-        <input id="question" type="text" placeholder="Ex. Can you tell me about Erik's theses? Has Erik ever studied finance? Che lauree ha Erik? " required />
+        <input id="question" type="text" placeholder="Ask me something..." required />
         <button type="submit">Send</button>
       </form>
-      <p class="note">All answers are generated by Llama 3.3 70B via Cerebras or Groq, using only details from my CV and university path.
-If you spot any mistakes, please let me know!</p>
+      <p class="note">All answers are generated by Llama 3.3 70B via Cerebras or Groq using only details from my CV.</p>
     </section>
   </main>
 
