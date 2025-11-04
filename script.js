@@ -35,9 +35,9 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// === Reveal on scroll (una-tantum, nessuna forzatura) ===
+// === Reveal on scroll (toggle: appare quando entra, scompare quando esce) ===
 (() => {
-  // Se l’utente preferisce meno animazioni, rendi tutto visibile subito
+  // Accessibilità: mostra tutto senza animazioni se richiesto
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     document.querySelectorAll(".fade").forEach(el => el.classList.add("visible"));
     document.querySelectorAll(".card").forEach(el => el.classList.add("active"));
@@ -47,20 +47,31 @@ form.addEventListener("submit", async (e) => {
   const targets = document.querySelectorAll(".fade, .card");
   if (!targets.length) return;
 
-  const io = new IntersectionObserver((entries, obs) => {
+  // Soglie semplici con micro-isteresi per evitare lampeggi: entra a 20%, esce sotto 10%
+  const SHOW = 0.2;
+  const HIDE = 0.1;
+
+  const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
       const el = entry.target;
+      const r = entry.intersectionRatio;
 
-      if (el.classList.contains("fade")) el.classList.add("visible");
-      if (el.classList.contains("card")) el.classList.add("active");
+      // Entra
+      if (r >= SHOW) {
+        if (el.classList.contains("fade")) el.classList.add("visible");
+        if (el.classList.contains("card")) el.classList.add("active");
+        return;
+      }
 
-      // Una volta visibile, smetti di osservarlo: niente toggle, niente jank
-      obs.unobserve(el);
+      // Esce
+      if (r <= HIDE) {
+        if (el.classList.contains("fade")) el.classList.remove("visible");
+        if (el.classList.contains("card")) el.classList.remove("active");
+      }
     });
   }, {
-    threshold: 0.2,   // circa 20% visibile
-    rootMargin: "0px" // nessuna spinta anticipata
+    threshold: [0, HIDE, SHOW, 0.5, 1],
+    rootMargin: "0px"
   });
 
   targets.forEach(el => io.observe(el));
