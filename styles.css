@@ -211,8 +211,8 @@ footer {
   .hero-image img {
     position: static !important;
     display: block;
-    width: 190% !important;
-    height: 190% !important;
+    width: 400% !important;
+    height: 400% !important;
     object-fit: cover !important;
     object-position: center 10% !important; /* leggermente verso l’alto */
     transform: none !important;
@@ -244,3 +244,4 @@ footer {
   }
   .hero-text h1 { font-size: 36px; }
 }
+
