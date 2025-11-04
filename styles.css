@@ -239,9 +239,10 @@ footer {
 @media (max-width: 600px) {
   .hero-image { width: 190px; }
   .hero-image img {
-    width: 210% !important;
-    height: 210% !important;
+    width: 400% !important;
+    height: 400% !important;
   }
   .hero-text h1 { font-size: 36px; }
 }
+
 
