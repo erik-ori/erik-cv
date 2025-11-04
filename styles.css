@@ -245,11 +245,12 @@ footer {
     width: 600% !important;
     height: 600% !important;
     object-fit: cover !important;
-    object-position: 35% 10% !important; /* 🔹 primo valore = orizzontale (sx-dx), secondo = verticale */
+    object-position: 5% 10% !important; /* 🔹 primo valore = orizzontale (sx-dx), secondo = verticale */
   }
 
   .hero-text h1 { font-size: 36px; }
 }
+
 
 
 
