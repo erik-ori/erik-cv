@@ -184,7 +184,7 @@ footer { padding: 20px 16px; text-align: center; color: var(--muted); border-top
   .hero-text h1 { font-size: 38px; }
 }
 /* ==== HERO circolare su mobile ==== */
-@media (max-width: 900px) {
+@media (max-width: 1900px) {
   .hero {
     flex-direction: column;
     align-items: center;     /* centro orizzontalmente tutto */
@@ -246,6 +246,7 @@ footer { padding: 20px 16px; text-align: center; color: var(--muted); border-top
   }
   .hero-text h1 { font-size: 36px; }
 }
+
 
 
 
