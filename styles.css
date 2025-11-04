@@ -211,8 +211,8 @@ footer {
   .hero-image img {
     position: static !important;
     display: block;
-    width: 400% !important;
-    height: 400% !important;
+    width: 700% !important;
+    height: 700% !important;
     object-fit: cover !important;
     object-position: center 10% !important; /* leggermente verso l’alto */
     transform: none !important;
@@ -242,13 +242,14 @@ footer {
   }
 
   .hero-image img {
-    width: 600% !important;
-    height: 600% !important;
+    width: 700% !important;
+    height: 700% !important;
     object-position: 85% 100% !important; /* 🔹 primo valore = orizzontale (sx-dx), secondo = verticale */
   }
 
   .hero-text h1 { font-size: 36px; }
 }
+
 
 
 
