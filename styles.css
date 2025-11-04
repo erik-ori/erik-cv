@@ -22,8 +22,9 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Disabilita qualsiasi scroll-snap residuo */
+/* Evita che il browser “ancori” lo scroll quando cambiano i contenuti */
 html, body, .timeline { scroll-snap-type: none !important; }
+html, body, .timeline, .card, .fade { overflow-anchor: none; }
 
 /* ===================== HERO (Desktop) ===================== */
 .hero {
@@ -109,7 +110,9 @@ html, body, .timeline { scroll-snap-type: none !important; }
   margin-bottom: 26px;
   box-shadow: 0 4px 10px rgba(0,0,0,.25);
   transition: transform .35s ease, opacity .4s ease;
-  will-change: transform;
+  /* niente will-change persistente: evita memory pressure e jank */
+  backface-visibility: hidden;        /* riduce tearing su trasformazioni */
+  transform: translateZ(0);           /* promozione GPU “soft”, non cambia layout */
 }
 
 .card h3 { margin: 0 0 5px; font-size: 19px; }
@@ -124,8 +127,14 @@ html, body, .timeline { scroll-snap-type: none !important; }
 }
 
 /* ===================== FADE-IN ===================== */
-.fade { opacity: 0; transform: translateY(18px); transition: opacity .45s ease, transform .45s ease; }
-.fade.visible { opacity: 1; transform: translateY(0); }
+.fade {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .45s ease, transform .45s ease;
+  backface-visibility: hidden;
+  transform: translateY(18px) translateZ(0);
+}
+.fade.visible { opacity: 1; transform: translateY(0) translateZ(0); }
 
 /* ===================== CHAT ===================== */
 .chatlog {
@@ -136,6 +145,8 @@ html, body, .timeline { scroll-snap-type: none !important; }
   border-radius: 10px;
   padding: 12px;
   margin-bottom: 12px;
+  overscroll-behavior: contain; /* evita scroll chaining col body su mobile */
+  -webkit-overflow-scrolling: touch; /* scorrimento più naturale su iOS */
 }
 .msg { margin: 10px 0; white-space: pre-wrap; }
 .msg.me { color: var(--acc); }
@@ -197,13 +208,11 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* glow coerente con le card */
     box-shadow:
       0 0 0 4px var(--card),
       0 0 14px rgba(77,163,255,.6),
       0 0 22px rgba(77,163,255,.35);
     border: 2px solid rgba(77,163,255,.85);
-    /* iOS repaint fix */
     -webkit-mask-image: -webkit-radial-gradient(white, black);
   }
 
@@ -214,8 +223,6 @@ footer {
     width: 600% !important;
     height: 600% !important;
     object-position: 85% 100% !important;
-
-    /* 👇 aggiunto solo questo */
     transform: translateX(-29px) translateY(-15px) !important;
     border-radius: 50%;
   }
@@ -246,37 +253,13 @@ footer {
     width: 600% !important;
     height: 600% !important;
     object-position: 85% 100% !important;
-
-    /* 👇 aggiunto solo questo */
     transform: translateX(-23px) translateY(-10px) !important;
   }
 
   .hero-text h1 { font-size: 36px; }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Accessibilità: niente animazioni se l’utente lo chiede */
+@media (prefers-reduced-motion: reduce) {
+  .fade, .card { transition: none !important; transform: none !important; opacity: 1 !important; }
+}
