@@ -237,13 +237,21 @@ footer {
 
 /* ---- Telefono piccolo ---- */
 @media (max-width: 600px) {
-  .hero-image { width: 190px; }
+  .hero-image {
+    width: 190px;
+  }
+
   .hero-image img {
     width: 600% !important;
     height: 600% !important;
+    object-fit: cover !important;
+    object-position: 35% 10% !important; /* 🔹 primo valore = orizzontale (sx-dx), secondo = verticale */
   }
+
   .hero-text h1 { font-size: 36px; }
 }
+
+
 
 
 
