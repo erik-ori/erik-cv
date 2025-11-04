@@ -211,11 +211,12 @@ footer {
   .hero-image img {
     position: static !important;
     display: block;
-    width: 700% !important;
-    height: 700% !important;
-    object-fit: cover !important;
-    object-position: center 10% !important; /* leggermente verso l’alto */
-    transform: none !important;
+    width: 600% !important;
+    height: 600% !important;
+    object-position: 85% 100% !important;
+
+    /* 👇 aggiunto solo questo */
+    transform: translateX(-23px) translateY(-10px) !important;
     border-radius: 50%;
   }
 
@@ -252,6 +253,7 @@ footer {
 
   .hero-text h1 { font-size: 36px; }
 }
+
 
 
 
