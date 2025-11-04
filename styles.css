@@ -183,11 +183,11 @@ footer { padding: 20px 16px; text-align: center; color: var(--muted); border-top
   .hero-image { height: 38vh; min-height: 240px; }
   .hero-text h1 { font-size: 38px; }
 }
-/* ==== HERO circolare su mobile ==== */
-@media (max-width: 1900px) {
+/* ==== HERO circolare su mobile (zoom maggiore) ==== */
+@media (max-width: 900px) {
   .hero {
     flex-direction: column;
-    align-items: center;     /* centro orizzontalmente tutto */
+    align-items: center;
     justify-content: center;
     gap: 16px;
     padding: 20px 0;
@@ -196,27 +196,27 @@ footer { padding: 20px 16px; text-align: center; color: var(--muted); border-top
 
   .hero-image {
     position: relative;
-    width: 220px;            /* dimensione cerchio */
+    width: 220px;
     height: 220px;
-    border-radius: 50%;      /* forma tonda */
-    overflow: hidden;        /* ritaglia immagine */
+    border-radius: 50%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow:
-      0 0 0 4px var(--card),                   /* bordo interno scuro */
-      0 0 14px rgba(77,163,255,.6),            /* alone blu esterno */
+      0 0 0 4px var(--card),
+      0 0 14px rgba(77,163,255,.6),
       0 0 22px rgba(77,163,255,.35);
-    border: 2px solid rgba(77,163,255,.8);     /* bordo blu */
+    border: 2px solid rgba(77,163,255,.8);
   }
 
   .hero-image img {
-    width: 100%;
-    height: 100%;
+    width: 140%;                /* zoom dentro il cerchio */
+    height: 140%;
     object-fit: cover;
-    object-position: center;
-    border-radius: 50%;      /* immagine rotonda */
-    transform: none;
+    object-position: center 15%; /* sposta leggermente verso l’alto se serve */
+    border-radius: 50%;
+    transform: scale(1.25);     /* zoom aggiuntivo fluido */
     display: block;
   }
 
@@ -244,9 +244,15 @@ footer { padding: 20px 16px; text-align: center; color: var(--muted); border-top
     width: 180px;
     height: 180px;
   }
+
+  .hero-image img {
+    width: 160%;
+    height: 160%;
+    transform: scale(1.35);
+  }
+
   .hero-text h1 { font-size: 36px; }
 }
-
 
 
 
