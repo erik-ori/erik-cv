@@ -1,211 +1,93 @@
-/* ============== THEME & BASE ============== */
-:root{
-  --bg:#0b0e12;        /* background scuro */
-  --fg:#f2f5f9;        /* testo */
-  --card:#161b22;      /* card */
-  --muted:#9ba6b9;     /* testo secondario */
-  --acc:#4da3ff;       /* accent */
-  --radius:18px;       /* raggio card */
+:root { --bg:#0b0e12; --fg:#f2f5f9; --card:#161b22; --muted:#9ba6b9; --acc:#4da3ff; --radius:18px; }
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+  font-family: "Poppins", system-ui, Roboto, Arial, sans-serif; line-height: 1.6;
+  scroll-behavior: smooth;            /* ancore più fluide */
+  overscroll-behavior-y: none;        /* niente “rimbalzi” strani */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-*{ box-sizing:border-box; }
-html,body{
-  margin:0; padding:0;
-  background:var(--bg); color:var(--fg);
-  font-family:"Poppins",system-ui,Roboto,Arial,sans-serif;
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  scroll-behavior:smooth;
+/* Disabilita qualsiasi scroll-snap residuo */
+html, body, .timeline { scroll-snap-type: none !important; }
+
+/* ===================== HERO ===================== */
+.hero {
+  display: flex; align-items: stretch; justify-content: center; flex-wrap: nowrap;
+  height: 57vh; background: linear-gradient(180deg, #0f141b 0%, #0b0e12 100%);
+  border-bottom: 4px solid #1b232e; margin: 0; padding: 0;
 }
-a{ color:var(--acc); }
-
-/* Disabilita eventuale scroll-snap ereditato */
-html,body,.timeline{ scroll-snap-type:none !important; }
-
-/* ============== HERO (sempre affiancati) ============== */
-/* Layout a due colonne SEMPRE, anche su mobile */
-.hero{
-  display:grid;
-  grid-template-columns: minmax(140px, 42%) 1fr; /* foto | testo */
-  align-items:center;
-  gap: clamp(8px, 3vw, 28px);
-  padding: clamp(10px, 4vw, 36px);
-  max-width: 1200px;
-  margin: 0 auto;
+.hero-image { flex: 1 1 50%; display: flex; justify-content: center; align-items: stretch; overflow: hidden; }
+.hero-image img { width: 120%; height: 100%; object-fit: cover; object-position: 95% center; border: none; display: block; margin: 0; padding: 0; transform: translateX(15px) translateY(1px); }
+.hero-text { flex: 1 1 50%; height: auto; display: flex; flex-direction: column; justify-content: center; padding: 0 40px; text-align: left; transform: translateX(-155px); }
+.hero-text h1 { font-size: 68px; margin: 0; color: var(--acc); line-height: 1.05; }
+.hero-text p { font-size: 21px; color: var(--muted); margin: 5px 0 18px; }
+.hero-text nav { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero-text nav a {
+  color: var(--acc); text-decoration: none; font-weight: 600;
+  border: 1px solid rgba(77,163,255,.25); border-radius: 999px; padding: 6px 12px;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
+.hero-text nav a:hover { background: rgba(77,163,255,.10); border-color: rgba(77,163,255,.40); transform: translateY(-1px); }
 
-/* ====== FOTO (UNICA PARTE MODIFICATA) ====== */
-/* Altezza più generosa in mobile, niente trasformazioni, fallback sicuro */
-.hero-image{
-  height: clamp(220px, 45vh, 420px);  /* prima: clamp(160px, 34vh, 420px) */
-  min-height: 200px;                  /* garantisce visibilità su telefoni piccoli */
-  overflow:hidden;
-  border-radius: clamp(14px, 2vw, 22px);
-  display:flex; align-items:center; justify-content:center;
-  /* Fallback di sicurezza: se <img> non carica, lo sfondo mostra comunque la foto
-     (puoi anche rimuovere la riga sotto se non la vuoi) */
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+/* ===================== TIMELINE / CONTENUTO ===================== */
+.timeline { max-width: 900px; margin: 36px auto; padding: 0 20px; }
+.section-title { display: flex; align-items: center; gap: 12px; margin: 24px 0 10px; }
+.section-title h2 { margin: 0; font-size: 26px; color: var(--acc); }
+.section-title i { color: var(--acc); }
+
+/* ===================== CARD ===================== */
+.card {
+  background: var(--card); border-radius: var(--radius); border: 1px solid #1f2630;
+  padding: 22px 24px; margin-bottom: 26px; /* spazio tra cards */
+  box-shadow: 0 4px 10px rgba(0,0,0,.25);
+  transition: transform .35s ease, opacity .4s ease; /* fluido */
+  will-change: transform;
 }
+.card h3 { margin: 0 0 5px; font-size: 19px; }
+.place { color: var(--muted); font-size: 14px; margin: 0 0 10px; }
+.card ul { margin: 0; padding-left: 18px; }
 
-.hero-image img{
-  width:100%;
-  height:100%;
-  object-fit:cover;        /* riempie senza deformare */
-  object-position:center;  /* centrata anche quando viene ritagliata */
-  display:block;
-  /* nessun transform / width 120% -> elimina banda di background e “salti” */
+/* “Illuminazione” solo quando visibile — effetto leggero */
+.card.active {
+  outline: 1px solid rgba(77,163,255,.35);
+  box-shadow: 0 0 14px rgba(77,163,255,.35);
+  transform: translateY(-2px);
 }
 
-/* Colonna testo */
-.hero-text{
-  display:flex; flex-direction:column; justify-content:center;
-  gap: clamp(6px, 1.4vw, 14px);
-  text-align:left;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
-}
+/* ===================== FRECCE (nascoste) ===================== */
+.arrow { display: none !important; }
 
-.hero-text h1{
-  font-size: clamp(28px, 7vw, 68px);
-  line-height: 1.05;
-  margin: 0;
-  color: var(--acc);
-}
+/* ===================== FADE-IN ===================== */
+.fade { opacity: 0; transform: translateY(18px); transition: opacity .45s ease, transform .45s ease; }
+.fade.visible { opacity: 1; transform: translateY(0); }
 
-.hero-text p{
-  font-size: clamp(14px, 2.6vw, 21px);
-  margin: 2px 0 10px;
-  color: var(--muted);
-}
+/* ===================== CHAT ===================== */
+.chatlog { height: 45vh; overflow-y: auto; background: #0e1217; border: 1px solid #1f2630; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+.msg { margin: 10px 0; white-space: pre-wrap; }
+.msg.me { color: var(--acc); }
+.msg.bot { color: var(--fg); }
+#chatform { display: flex; gap: 10px; }
+#question { flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #2a3442; background: #0e1217; color: var(--fg); }
+button { border: none; border-radius: 10px; padding: 10px 18px; background: var(--acc); color: #00234a; font-weight: 600; cursor: pointer; transition: background .25s ease, transform .25s ease; }
+button:hover { background: #66b3ff; transform: translateY(-1px); }
+.note { color: var(--muted); font-size: 13px; margin-top: 10px; }
 
-.hero-text nav{ display:flex; flex-wrap:wrap; gap:10px; }
-.hero-text nav a{
-  text-decoration:none; font-weight:600; color:var(--acc);
-  border:1px solid rgba(77,163,255,.25);
-  border-radius:999px; padding:6px 12px;
-  transition: background .2s ease, border-color .2s ease, transform .2s ease;
-}
-.hero-text nav a:hover{
-  background:rgba(77,163,255,.10);
-  border-color:rgba(77,163,255,.40);
-  transform: translateY(-1px);
-}
+/* ===================== FOOTER ===================== */
+footer { padding: 20px 16px; text-align: center; color: var(--muted); border-top: 1px solid #1b232e; font-size: 14px; }
 
-/* ============== SEZIONI & TITOLI ============== */
-main{ max-width:1200px; margin: 0 auto; padding: 0 clamp(12px, 3vw, 24px) 60px; }
-
-.section-title{
-  display:flex; align-items:center; gap:10px;
-  margin: 26px 0 10px;
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 900px) {
+  .hero { flex-direction: column; height: auto; }
+  .hero-image { flex: none; width: 100%; height: auto; transform: none; }
+  .hero-text { flex: none; text-align: center; padding: 20px; height: auto; transform: none; }
+  .hero-text h1 { font-size: 48px; }
+  .hero-text p { font-size: 18px; }
 }
-.section-title h2{
-  font-size: clamp(20px, 2.6vw, 26px);
-  margin:0;
-}
-.section-title i{ color: var(--acc); }
-
-/* ============== CARDS ============== */
-.card{
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: clamp(16px, 2.4vw, 24px);
-  box-shadow: 0 10px 30px rgba(0,0,0,.30);
-  border: 1px solid rgba(255,255,255,.06);
-  margin-bottom: clamp(16px, 2.2vw, 22px);
-}
-.card h3{ margin: 0 0 6px; font-size: clamp(16px, 2.3vw, 20px); }
-.card .place{ margin: 0 0 10px; color: var(--muted); }
-.card ul{ margin: 8px 0 0 18px; padding:0; }
-.card li{ margin: 4px 0; }
-
-/* ============== TIMELINE (se presente) ============== */
-.timeline{ position:relative; padding: 0 24px; }
-.timeline::before{
-  content:""; position:absolute; top:0; bottom:0; left:18px; width:2px;
-  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0));
-}
-.timeline .entry{ position:relative; padding-left:36px; margin:18px 0; }
-.timeline .entry::before{
-  content:""; position:absolute; left:10px; top:6px; width:16px; height:16px; border-radius:50%;
-  background: var(--acc);
-  box-shadow: 0 0 0 4px rgba(77,163,255,.15);
-}
-
-/* ============== FRECCE DECORATIVE (se presenti) ============== */
-.arrow{
-  width:2px; height:48px; margin: 8px auto 16px; background: rgba(255,255,255,.15);
-  border-radius:999px; position:relative;
-}
-.arrow::after{
-  content:""; position:absolute; bottom:-6px; left:-5px; width:12px; height:12px;
-  border-right:2px solid rgba(255,255,255,.25);
-  border-bottom:2px solid rgba(255,255,255,.25);
-  transform: rotate(45deg);
-}
-
-/* ============== CHAT ============== */
-.card.chat{ display:flex; flex-direction:column; gap:12px; }
-.chatlog{
-  height: 260px; overflow:auto;
-  background: rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.06);
-  border-radius: 12px;
-  padding: 10px;
-}
-.msg{ padding:8px 10px; margin:6px 0; border-radius: 10px; }
-.msg.me{ background: rgba(77,163,255,.15); align-self:flex-end; }
-.msg.bot{ background: rgba(255,255,255,.06); }
-#chatform{ display:flex; gap:8px; }
-#chatform input{
-  flex:1; border-radius:10px; border:1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.05); color: var(--fg); padding:10px 12px;
-}
-#chatform button{
-  border-radius:10px; border:1px solid rgba(77,163,255,.35);
-  background: rgba(77,163,255,.15); color: var(--fg); padding:10px 14px; font-weight:600;
-  cursor:pointer; transition: transform .15s ease, background .2s ease;
-}
-#chatform button:hover{ transform: translateY(-1px); background: rgba(77,163,255,.22); }
-.note{ color: var(--muted); margin: 4px 0 0; font-size: 14px; }
-
-/* ============== FOOTER ============== */
-footer{
-  max-width:1200px; margin: 20px auto 40px;
-  padding: 0 clamp(12px, 3vw, 24px);
-  color: var(--muted);
-}
-
-/* ============== ANIMAZIONI SOFT (opzionali) ============== */
-.fade{ opacity:0; transform: translateY(8px); animation: fadeIn .6s ease forwards; }
-@keyframes fadeIn{
-  to{ opacity:1; transform:none; }
-}
-
-/* ============== RESPONSIVE FINO A SCHERMI PICCOLI ============== */
-/* Manteniamo SEMPRE due colonne; solo micro-tuning delle proporzioni */
-@media (max-width: 760px){
-  .hero{
-    grid-template-columns: minmax(120px, 48%) 1fr; /* un filo più spazio alla foto */
-    gap: 10px;
-    padding: 12px;
-  }
-
-  /* —— TWEAK FOTO per telefoni medi —— */
-  .hero-image{ height: clamp(210px, 42vh, 380px); min-height: 200px; }
-}
-
-@media (max-width: 400px){
-  .hero{
-    grid-template-columns: minmax(110px, 46%) 1fr;
-    gap: 8px;
-  }
-
-  /* —— TWEAK FOTO per telefoni molto stretti —— */
-  .hero-image{ height: clamp(200px, 40vh, 340px); min-height: 200px; }
-
-  .hero-text h1{ font-size: clamp(24px, 7.8vw, 34px); }
-  .hero-text p{ font-size: 14px; }
+@media (max-width: 600px) {
+  .hero-text h1 { font-size: 40px; }
+  .timeline { padding: 0 16px; }
+  .section-title h2 { font-size: 22px; }
+  .card { padding: 18px 18px; margin-bottom: 20px; }
 }
