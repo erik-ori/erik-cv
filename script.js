@@ -34,11 +34,66 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-/* ===== Scroll animations: visibilità temporanea (con isteresi anti-sfarfallio) ===== */
+/* ===== Scroll animations: isteresi + batching rAF + fast-scroll guard ===== */
 (() => {
-  const SHOW = 0.28;  // entra quando è visibile almeno al 28%
-  const HIDE = 0.10;  // esce solo quando scende sotto il 10% (evita toggle continuo)
+  const SHOW = 0.30;   // entra quando visibile >= 30%
+  const HIDE = 0.10;   // esce solo quando visibile <= 10% (evita ping-pong)
   const SEEN = new WeakMap();
+
+  // Rilevazione scroll "veloce" (momentum): durante fast scroll non togliamo classi
+  let isFastScroll = false;
+  let lastY = window.scrollY, lastT = performance.now();
+  let speedTimer = 0;
+
+  const onScroll = () => {
+    const now = performance.now();
+    const dy = Math.abs(window.scrollY - lastY);
+    const dt = Math.max(1, now - lastT);
+    const v = dy / dt; // px/ms
+
+    lastY = window.scrollY;
+    lastT = now;
+
+    isFastScroll = v > 0.45; // soglia empirica
+    clearTimeout(speedTimer);
+    speedTimer = setTimeout(() => { isFastScroll = false; }, 120);
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  // Batching via requestAnimationFrame
+  const toShow = new Set();
+  const toHide = new Set();
+  let scheduled = false;
+
+  const scheduleFlush = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      // Priorità: show vince su hide per lo stesso elemento
+      toShow.forEach(el => toHide.delete(el));
+
+      // Applica "show"
+      toShow.forEach(el => {
+        if (el.classList.contains("fade")) el.classList.add("visible");
+        if (el.classList.contains("card")) el.classList.add("active");
+        // will-change solo per la durata della transizione
+        el.style.willChange = "opacity, transform";
+        setTimeout(() => { el.style.willChange = "auto"; }, 450);
+      });
+
+      // Durante fast scroll non togliamo le classi (evita rimbalzo)
+      if (!isFastScroll) {
+        toHide.forEach(el => {
+          if (el.classList.contains("fade")) el.classList.remove("visible");
+          if (el.classList.contains("card")) el.classList.remove("active");
+        });
+      }
+
+      toShow.clear();
+      toHide.clear();
+      scheduled = false;
+    });
+  };
 
   const io = new IntersectionObserver(
     (entries) => {
@@ -47,30 +102,23 @@ form.addEventListener("submit", async (e) => {
         const r = entry.intersectionRatio;
         const wasVisible = SEEN.get(el) === true;
 
-        // decide usando soglie diverse per show/hide
         if (!wasVisible && r >= SHOW) {
           SEEN.set(el, true);
-
-          if (el.classList.contains("fade")) el.classList.add("visible");
-          if (el.classList.contains("card")) el.classList.add("active");
-
-          // micro-ottimizzazione: will-change solo per la durata della transizione
-          el.style.willChange = "opacity, transform";
-          setTimeout(() => (el.style.willChange = "auto"), 450);
+          toShow.add(el);
+          scheduleFlush();
         } else if (wasVisible && r <= HIDE) {
           SEEN.set(el, false);
-
-          if (el.classList.contains("fade")) el.classList.remove("visible");
-          if (el.classList.contains("card")) el.classList.remove("active");
+          toHide.add(el);
+          scheduleFlush();
         }
       });
     },
     {
-      threshold: [0, HIDE, SHOW, 0.5, 1],
-      rootMargin: "0px 0px -8% 0px", // uguale al tuo, mantiene il feeling
+      threshold: [HIDE, SHOW, 0.5, 1],
+      rootMargin: "0px 0px -10% 0px", // uscita leggermente anticipata = più stabile
     }
   );
 
-  // osserva .fade e .card (come prima)
+  // Osserva gli elementi come prima
   document.querySelectorAll(".fade, .card").forEach((el) => io.observe(el));
 })();
