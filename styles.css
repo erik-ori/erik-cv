@@ -175,7 +175,7 @@ footer {
    ===============  RESPONSIVE (Mobile & Tablet) ===========
    ========================================================= */
 
-/* ---- Tablet / Mobile base ---- */
+/* ---- Tablet / Mobile base (in orizzontale) ---- */
 @media (max-width: 900px) {
   /* Layout generale dell'hero in colonna */
   .hero {
@@ -235,7 +235,7 @@ footer {
   .card { padding: 18px 18px; margin-bottom: 20px; }
 }
 
-/* ---- Telefono piccolo ---- */
+/* ---- Telefono piccolo verticale---- */
 @media (max-width: 600px) {
   .hero-image {
     width: 190px;
@@ -249,6 +249,7 @@ footer {
 
   .hero-text h1 { font-size: 36px; }
 }
+
 
 
 
