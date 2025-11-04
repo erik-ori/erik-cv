@@ -34,31 +34,43 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-/* ===== Scroll animations: visibilità temporanea ===== */
-const io = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((e) => {
-      const el = e.target;
-      const isIn = e.isIntersecting;
+/* ===== Scroll animations: visibilità temporanea (con isteresi anti-sfarfallio) ===== */
+(() => {
+  const SHOW = 0.28;  // entra quando è visibile almeno al 28%
+  const HIDE = 0.10;  // esce solo quando scende sotto il 10% (evita toggle continuo)
+  const SEEN = new WeakMap();
 
-      // visibilità base (fade)
-      if (el.classList.contains("fade")) {
-        if (isIn) el.classList.add("visible");
-        else el.classList.remove("visible");
-      }
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const el = entry.target;
+        const r = entry.intersectionRatio;
+        const wasVisible = SEEN.get(el) === true;
 
-      // card: attive solo quando visibili
-      if (el.classList.contains("card")) {
-        if (isIn) el.classList.add("active");
-        else el.classList.remove("active");
-      }
-    });
-  },
-  {
-    threshold: 0.2,
-    rootMargin: "0px 0px -8% 0px",
-  }
-);
+        // decide usando soglie diverse per show/hide
+        if (!wasVisible && r >= SHOW) {
+          SEEN.set(el, true);
 
-// osserva elementi interessati (niente frecce)
-document.querySelectorAll(".fade, .card").forEach((el) => io.observe(el));
+          if (el.classList.contains("fade")) el.classList.add("visible");
+          if (el.classList.contains("card")) el.classList.add("active");
+
+          // micro-ottimizzazione: will-change solo per la durata della transizione
+          el.style.willChange = "opacity, transform";
+          setTimeout(() => (el.style.willChange = "auto"), 450);
+        } else if (wasVisible && r <= HIDE) {
+          SEEN.set(el, false);
+
+          if (el.classList.contains("fade")) el.classList.remove("visible");
+          if (el.classList.contains("card")) el.classList.remove("active");
+        }
+      });
+    },
+    {
+      threshold: [0, HIDE, SHOW, 0.5, 1],
+      rootMargin: "0px 0px -8% 0px", // uguale al tuo, mantiene il feeling
+    }
+  );
+
+  // osserva .fade e .card (come prima)
+  document.querySelectorAll(".fade, .card").forEach((el) => io.observe(el));
+})();
