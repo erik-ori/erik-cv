@@ -34,113 +34,133 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-/* ===== Scroll animations: fluide + anti-sfarfallio + anti-ancoraggio ===== */
+/* ===== Scroll animations: fluide + anti-sfarfallio ===== */
 (() => {
   const SHOW = 0.28; // entra quando >= 28%
   const HIDE = 0.10; // esce quando <= 10%
-  const DWELL_MS = 140; // tempo minimo stabile prima di applicare il cambio
-  const SEEN = new WeakMap(); // stato corrente {visible:boolean, pending:boolean, since:number}
+  const DWELL_MS = 120; // tempo minimo stabile prima di cambiare
+  const STATE = new WeakMap(); // { visible:boolean, pendingTo:boolean|null, since:number }
 
-  // Coda di aggiornamenti da applicare in un singolo frame
-  let dirty = false;
-  const toUpdate = new Set();
+  let rafQueued = false;
+  const queue = new Set();
+
+  function flush() {
+    rafQueued = false;
+    const now = performance.now();
+
+    queue.forEach((el) => {
+      const st = STATE.get(el);
+      if (!st || st.pendingTo === null) return;
+
+      if (now - st.since >= DWELL_MS) {
+        // Applica il cambio
+        st.visible = st.pendingTo;
+        st.pendingTo = null;
+
+        // Cambi di classe che non alterano il layout (solo opacity/transform nel CSS)
+        if (st.visible) {
+          if (el.classList.contains("fade")) el.classList.add("visible");
+          if (el.classList.contains("card")) el.classList.add("active");
+          el.style.willChange = "opacity, transform";
+          setTimeout(() => (el.style.willChange = "auto"), 450);
+        } else {
+          if (el.classList.contains("fade")) el.classList.remove("visible");
+          if (el.classList.contains("card")) el.classList.remove("active");
+        }
+      }
+    });
+
+    queue.clear();
+  }
 
   function scheduleFlush() {
-    if (dirty) return;
-    dirty = true;
-    requestAnimationFrame(() => {
-      const now = performance.now();
-      toUpdate.forEach((el) => {
-        const st = SEEN.get(el);
-        if (!st || st.pending === null) return;
-
-        // Applica il cambio solo se è rimasto stabile abbastanza
-        if (now - st.pending.since >= DWELL_MS) {
-          st.visible = st.pending.to;
-          st.pending = null;
-
-          // Evita che il browser sposti lo scroll mentre cambia le classi
-          el.style.overflowAnchor = "none";
-
-          if (st.visible) {
-            if (el.classList.contains("fade")) el.classList.add("visible");
-            if (el.classList.contains("card")) el.classList.add("active");
-            // will-change solo durante la transizione CSS
-            el.style.willChange = "opacity, transform";
-            setTimeout(() => (el.style.willChange = "auto"), 450);
-          } else {
-            if (el.classList.contains("fade")) el.classList.remove("visible");
-            if (el.classList.contains("card")) el.classList.remove("active");
-          }
-
-          // Riabilita l’ancoraggio dopo il frame successivo
-          requestAnimationFrame(() => {
-            el.style.overflowAnchor = "";
-          });
-        }
-      });
-      toUpdate.clear();
-      dirty = false;
-    });
+    if (!rafQueued) {
+      rafQueued = true;
+      requestAnimationFrame(flush);
+    }
   }
 
   const io = new IntersectionObserver(
     (entries) => {
       const now = performance.now();
+
       entries.forEach((entry) => {
         const el = entry.target;
         const r = entry.intersectionRatio;
 
-        // Inizializza stato
-        if (!SEEN.has(el)) {
-          SEEN.set(el, { visible: false, pending: null, since: now });
+        if (!STATE.has(el)) {
+          STATE.set(el, { visible: false, pendingTo: null, since: now });
         }
-        const st = SEEN.get(el);
+        const st = STATE.get(el);
 
-        // Decisione con isteresi
-        const wantVisible = st.visible
-          ? r > HIDE
-          : r >= SHOW;
+        // Hysteresis: se già visibile richiede >HIDE per restare, altrimenti >=SHOW per entrare
+        const wantVisible = st.visible ? r > HIDE : r >= SHOW;
 
-        // Se lo stato desiderato è diverso dall’attuale, avvia/aggiorna la finestra di dwell
         if (wantVisible !== st.visible) {
-          if (st.pending && st.pending.to === wantVisible) {
-            // già in pending verso lo stesso stato: aggiorna il timestamp per tenerlo “stabile”
-            st.pending.since = now;
-          } else {
-            // nuova transizione richiesta
-            st.pending = { to: wantVisible, since: now };
+          // Se è una nuova direzione, imposta il dwell da ORA.
+          if (st.pendingTo !== wantVisible) {
+            st.pendingTo = wantVisible;
+            st.since = now;
           }
-          toUpdate.add(el);
+          // Non resettare st.since se arrivano altri eventi nella stessa direzione
+          queue.add(el);
           scheduleFlush();
         } else {
-          // Se l’osservazione rientra nel medesimo stato, annulla pending
-          st.pending = null;
+          // Stato desiderato coincide con quello attuale: annulla eventuale pending
+          st.pendingTo = null;
         }
       });
     },
     {
-      // Soglie sufficientemente distanziate per ridurre rimbalzi
-      threshold: [0, HIDE, SHOW, 0.5, 0.75, 1],
-      // Niente rootMargin negativo: riduce “spinte” precoci
+      threshold: [0, HIDE, SHOW, 0.5, 1],
       rootMargin: "0px",
     }
   );
 
-  // Osserva una sola volta
-  document.querySelectorAll(".fade, .card").forEach((el) => {
-    // Hardening: assicura che l’animazione non cambi il layout (solo opacity/transform via CSS)
+  // Osserva target
+  const targets = document.querySelectorAll(".fade, .card");
+  targets.forEach((el) => {
+    // Safe defaults per evitare jank
     el.style.backfaceVisibility = "hidden";
     el.style.transformStyle = "preserve-3d";
     io.observe(el);
   });
 
-  // Safety: pausa animazioni se l’utente preferisce ridurre i motion
+  // Check iniziale: tutto ciò che è già dentro SHOW parte visibile senza attese
+  // (evita "pagina vuota" al primo render)
+  requestAnimationFrame(() => {
+    const now = performance.now();
+    targets.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const vw = window.innerWidth || document.documentElement.clientWidth;
+
+      const vertVisible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      const horizVisible = Math.max(0, Math.min(rect.right, vw) - Math.max(rect.left, 0));
+      const area = rect.width * rect.height || 1;
+      const visRatio = (vertVisible * horizVisible) / area;
+
+      if (!STATE.has(el)) STATE.set(el, { visible: false, pendingTo: null, since: now });
+      const st = STATE.get(el);
+
+      if (visRatio >= SHOW) {
+        st.visible = true;
+        st.pendingTo = null;
+        if (el.classList.contains("fade")) el.classList.add("visible");
+        if (el.classList.contains("card")) el.classList.add("active");
+      }
+    });
+  });
+
+  // Accessibilità: riduci motion se richiesto
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (mq.matches) {
     io.disconnect();
-    document.querySelectorAll(".fade, .card").forEach((el) => {
-      el.classList.add("visible", "active");
+    targets.forEach((el) => {
+      if (el.classList.contains("fade")) el.classList.add("visible");
+      if (el.classList.contains("card")) el.classList.add("active");
     });
   }
 })();
+
+
