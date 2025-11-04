@@ -34,13 +34,20 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-/* ===== Scroll animations: isteresi + batching rAF + fast-scroll guard ===== */
+/* ===== Scroll animations: isteresi + debounce + batching rAF + fast-scroll guard ===== */
 (() => {
-  const SHOW = 0.30;   // entra quando visibile >= 30%
-  const HIDE = 0.10;   // esce solo quando visibile <= 10% (evita ping-pong)
-  const SEEN = new WeakMap();
+  // Soglie: entra/esce
+  const SHOW = 0.30;       // entra quando visibile >= 30%
+  const HIDE = 0.10;       // esce quando visibile <= 10%
+  // Debounce: quanto aspettare prima di applicare show/hide (ms)
+  const SHOW_DELAY = 40;   // micro-ritardo per compattare gli ingressi
+  const HIDE_DELAY = 140;  // più alto: elimina ping-pong allo scroll lento
 
-  // Rilevazione scroll "veloce" (momentum): durante fast scroll non togliamo classi
+  const SEEN = new WeakMap();             // stato visibile (true/false)
+  const showTO = new WeakMap();           // timer per show per elemento
+  const hideTO = new WeakMap();           // timer per hide per elemento
+
+  // Fast scroll guard: durante scroll veloce non togliamo classi (evita rimbalzo)
   let isFastScroll = false;
   let lastY = window.scrollY, lastT = performance.now();
   let speedTimer = 0;
@@ -50,7 +57,6 @@ form.addEventListener("submit", async (e) => {
     const dy = Math.abs(window.scrollY - lastY);
     const dt = Math.max(1, now - lastT);
     const v = dy / dt; // px/ms
-
     lastY = window.scrollY;
     lastT = now;
 
@@ -69,19 +75,16 @@ form.addEventListener("submit", async (e) => {
     if (scheduled) return;
     scheduled = true;
     requestAnimationFrame(() => {
-      // Priorità: show vince su hide per lo stesso elemento
+      // Show ha priorità su Hide per lo stesso elemento
       toShow.forEach(el => toHide.delete(el));
 
-      // Applica "show"
       toShow.forEach(el => {
         if (el.classList.contains("fade")) el.classList.add("visible");
         if (el.classList.contains("card")) el.classList.add("active");
-        // will-change solo per la durata della transizione
         el.style.willChange = "opacity, transform";
         setTimeout(() => { el.style.willChange = "auto"; }, 450);
       });
 
-      // Durante fast scroll non togliamo le classi (evita rimbalzo)
       if (!isFastScroll) {
         toHide.forEach(el => {
           if (el.classList.contains("fade")) el.classList.remove("visible");
@@ -95,6 +98,52 @@ form.addEventListener("submit", async (e) => {
     });
   };
 
+  // Helpers per gestione debounce per-elemento
+  const clearShowTO = (el) => {
+    const t = showTO.get(el);
+    if (t) { clearTimeout(t); showTO.delete(el); }
+  };
+  const clearHideTO = (el) => {
+    const t = hideTO.get(el);
+    if (t) { clearTimeout(t); hideTO.delete(el); }
+  };
+
+  const scheduleShow = (el) => {
+    if (SEEN.get(el) === true) return; // già visibile
+    clearHideTO(el); // se stava per nascondersi, annulla
+    if (showTO.get(el)) return; // già schedulato
+    const t = setTimeout(() => {
+      showTO.delete(el);
+      SEEN.set(el, true);
+      toShow.add(el);
+      scheduleFlush();
+    }, SHOW_DELAY);
+    showTO.set(el, t);
+  };
+
+  const scheduleHide = (el) => {
+    if (SEEN.get(el) !== true) return; // già nascosto
+    clearShowTO(el); // se stava per mostrarsi, annulla
+    if (hideTO.get(el)) return; // già schedulato
+    const t = setTimeout(() => {
+      hideTO.delete(el);
+      // Prima di spegnere, verifica che NON sia tornato sufficientemente visibile
+      // (se è risalito sopra SHOW, allora non si spegne)
+      const stateVisible = SEEN.get(el) === true;
+      if (!stateVisible) return; // è già stato spento nel frattempo
+      // Se siamo ancora in fast scroll, aspetta il calm down
+      if (isFastScroll) {
+        // riprova più tardi (debounce continua finché non calma)
+        scheduleHide(el);
+        return;
+      }
+      SEEN.set(el, false);
+      toHide.add(el);
+      scheduleFlush();
+    }, HIDE_DELAY);
+    hideTO.set(el, t);
+  };
+
   const io = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -102,23 +151,28 @@ form.addEventListener("submit", async (e) => {
         const r = entry.intersectionRatio;
         const wasVisible = SEEN.get(el) === true;
 
+        // Ingresso: sopra SHOW => programma show (debounced)
         if (!wasVisible && r >= SHOW) {
-          SEEN.set(el, true);
-          toShow.add(el);
-          scheduleFlush();
-        } else if (wasVisible && r <= HIDE) {
-          SEEN.set(el, false);
-          toHide.add(el);
-          scheduleFlush();
+          scheduleShow(el);
+        }
+        // Uscita: sotto HIDE => programma hide (debounced)
+        else if (wasVisible && r <= HIDE) {
+          scheduleHide(el);
+        }
+        // Zona morta tra HIDE e SHOW: non fare nulla, i debounce decidono
+        else {
+          // Se torna tra le soglie, annulla un eventuale hide programmato
+          if (r > HIDE) clearHideTO(el);
+          // E se scende sotto SHOW, annulla eventuale show programmato
+          if (r < SHOW) clearShowTO(el);
         }
       });
     },
     {
-      threshold: [HIDE, SHOW, 0.5, 1],
-      rootMargin: "0px 0px -10% 0px", // uscita leggermente anticipata = più stabile
+      threshold: [0, HIDE, SHOW, 0.5, 1],
+      rootMargin: "0px 0px -10% 0px",
     }
   );
 
-  // Osserva gli elementi come prima
   document.querySelectorAll(".fade, .card").forEach((el) => io.observe(el));
 })();
