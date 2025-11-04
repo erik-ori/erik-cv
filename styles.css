@@ -216,7 +216,7 @@ footer {
     object-position: 85% 100% !important;
 
     /* 👇 aggiunto solo questo */
-    transform: translateX(-23px) translateY(-10px) !important;
+    transform: translateX(-29px) translateY(-15px) !important;
     border-radius: 50%;
   }
 
@@ -253,6 +253,7 @@ footer {
 
   .hero-text h1 { font-size: 36px; }
 }
+
 
 
 
