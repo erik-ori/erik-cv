@@ -242,13 +242,18 @@ footer {
   }
 
   .hero-image img {
-    width: 700% !important;
-    height: 700% !important;
-    object-position: 85% 100% !important; /* 🔹 primo valore = orizzontale (sx-dx), secondo = verticale */
+    width: 600% !important;
+    height: 600% !important;
+    object-position: 85% 100% !important;
+
+    /* 👇 aggiunto solo questo */
+    transform: translateX(-22%) translateY(-10%) !important;
   }
 
   .hero-text h1 { font-size: 36px; }
 }
+
+
 
 
 
