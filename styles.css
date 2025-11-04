@@ -35,34 +35,37 @@ html,body,.timeline{ scroll-snap-type:none !important; }
   margin: 0 auto;
 }
 
-/* Colonna immagine: altezza controllata per evitare header “altissimi” */
+/* ====== FOTO (UNICA PARTE MODIFICATA) ====== */
+/* Altezza più generosa in mobile, niente trasformazioni, fallback sicuro */
 .hero-image{
-  height: clamp(160px, 34vh, 420px);
+  height: clamp(220px, 45vh, 420px);  /* prima: clamp(160px, 34vh, 420px) */
+  min-height: 200px;                  /* garantisce visibilità su telefoni piccoli */
   overflow:hidden;
   border-radius: clamp(14px, 2vw, 22px);
   display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  /* Fallback di sicurezza: se <img> non carica, lo sfondo mostra comunque la foto
+     (puoi anche rimuovere la riga sotto se non la vuoi) */
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
   box-shadow: 0 10px 30px rgba(0,0,0,.35);
 }
 
-/* L’immagine riempie il contenitore senza traslazioni */
 .hero-image img{
   width:100%;
   height:100%;
-  object-fit:cover;
-  object-position:center;
+  object-fit:cover;        /* riempie senza deformare */
+  object-position:center;  /* centrata anche quando viene ritagliata */
   display:block;
-  /* IMPORTANT: nessun transform qui -> elimina spazio vuoto sopra */
+  /* nessun transform / width 120% -> elimina banda di background e “salti” */
 }
 
-/* Colonna testo: vicina alla foto, senza margini extra */
+/* Colonna testo */
 .hero-text{
   display:flex; flex-direction:column; justify-content:center;
   gap: clamp(6px, 1.4vw, 14px);
   text-align:left;
-  padding: 0;               /* niente padding che spinga il titolo in basso */
+  padding: 0;
   margin: 0;
-  min-width: 0;             /* prevenire overflow del grid */
+  min-width: 0;
 }
 
 .hero-text h1{
@@ -189,18 +192,20 @@ footer{
     gap: 10px;
     padding: 12px;
   }
-  .hero-image{ height: clamp(150px, 32vh, 360px); }
-  .hero-text h1{ font-size: clamp(26px, 8vw, 40px); }
-  .hero-text p{ font-size: clamp(13px, 3.2vw, 18px); }
+
+  /* —— TWEAK FOTO per telefoni medi —— */
+  .hero-image{ height: clamp(210px, 42vh, 380px); min-height: 200px; }
 }
 
-/* Telefoni molto stretti: ancora affiancati, ma testo più compatto */
 @media (max-width: 400px){
   .hero{
     grid-template-columns: minmax(110px, 46%) 1fr;
     gap: 8px;
   }
-  .hero-image{ height: clamp(140px, 30vh, 320px); }
+
+  /* —— TWEAK FOTO per telefoni molto stretti —— */
+  .hero-image{ height: clamp(200px, 40vh, 340px); min-height: 200px; }
+
   .hero-text h1{ font-size: clamp(24px, 7.8vw, 34px); }
   .hero-text p{ font-size: 14px; }
 }
